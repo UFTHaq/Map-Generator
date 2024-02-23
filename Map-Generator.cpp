@@ -69,8 +69,8 @@ int RoundToNearestMultipleOfSteps(int value)
 
 Coor GetRandomPosition()
 {
-    int random_x = GetRandomValue(GetScreenWidth() * 0.4F, GetScreenWidth() * 0.6F);
-    int random_y = GetRandomValue(GetScreenHeight() * 0.4F, GetScreenHeight() * 0.6F);
+    int random_x = GetRandomValue(GetScreenWidth() * 0.35F, GetScreenWidth() * 0.65F);
+    int random_y = GetRandomValue(GetScreenHeight() * 0.35F, GetScreenHeight() * 0.65F);
 
     random_x = RoundToNearestMultipleOfSteps(random_x);
     random_y = RoundToNearestMultipleOfSteps(random_y);
@@ -86,7 +86,7 @@ void ResizeStartStepsSize(std::vector<Coor>& start_position) {
 }
 
 
-const int number_steps = 25000;
+const int number_steps = 30000;
 const int total_walker = 7;
 
 const int step_per_delay = 50;
@@ -150,6 +150,24 @@ int GetNextIterationNumber() {
     return max_number + 1;
 }
 
+std::string getDate()
+{
+    auto now{ std::chrono::system_clock::now() };
+    auto now_time_t{ std::chrono::system_clock::to_time_t(now) };
+    tm now_tm{};
+    localtime_s(&now_tm, &now_time_t);
+
+    std::stringstream ss{};
+    ss << std::setw(2) << std::setfill('0') << now_tm.tm_mday << "/"
+        << std::setw(2) << std::setfill('0') << now_tm.tm_mon + 1 << "/"
+        << std::setw(2) << std::setfill('0') << (now_tm.tm_year + 1900);
+
+    std::string formatted_date = ss.str();
+
+    return formatted_date;
+}
+
+
 int main()
 {
     const Color BASE_COLOR = Color{ 30, 30, 30, 55 };
@@ -177,17 +195,8 @@ int main()
         all_walks.push_back(walker(number_steps));
     }
 
-    // std::vector<Color> colors{
-    //     {210, 210, 210, 255}, 
-    //     {200, 200, 200, 255}, 
-    //     {160, 160, 160, 255}, 
-    //     {190, 190, 190, 255}, 
-    //     {180, 180, 180, 255}, 
-    //     {170, 170, 170, 255}, 
-    //     {220, 220, 220, 255}
-    // };
-
-    std::vector<Color> colors{
+    // COLORFULL
+    std::vector<Color> colors1{
         {35, 164, 255, 255},    // Dodger Blue for Lakes and Rivers
         {30, 139, 34, 255},    // Dark Green for Forests
         {85, 107, 47, 255},     // Dark Olive Green for Marshes
@@ -197,8 +206,20 @@ int main()
         {192, 192, 192, 255}    // Silver for Rocky Areas
     };
 
+    // COLOR GRAYS
+    std::vector<Color> colors2{
+        {100, 100, 100, 255},
+        {120, 120, 120, 255},
+        {140, 140, 140, 255},
+        {160, 160, 160, 255},
+        {180, 180, 180, 255},
+        {200, 200, 200, 255},
+        {220, 220, 220, 255}
+    };
 
+    std::vector<Color> *ptr_vector_colors = &colors1;
 
+    std::string today = getDate();
 
     while (!WindowShouldClose())
     {
@@ -248,9 +269,7 @@ int main()
                 title_rect.y + (title_rect.height - title_text_measure.y) / 2
             };
 
-            //if (!isScreenShot) {
-                DrawTextEx(font, title_text, title_text_coor, font_size, font_space, RAYWHITE);
-            //}
+            DrawTextEx(font, title_text, title_text_coor, font_size, font_space, RAYWHITE);            
 
         }
 
@@ -307,6 +326,7 @@ int main()
             
 
             float padding_scissor = 5.F;
+
             BeginScissorMode(
                 map.x + (padding_scissor * 1),
                 map.y + (padding_scissor * 1),
@@ -324,22 +344,21 @@ int main()
                         { (float)(start_position[i].x + step_size * titik_awal.x), (float)(start_position[i].y + step_size * titik_awal.y) },
                         { (float)(start_position[i].x + step_size * titik_akhir.x), (float)(start_position[i].y + step_size * titik_akhir.y) },
                         line_thick,
-                        colors[i]
+                        ptr_vector_colors->at(i)
                     );
 
-                    // DrawCircle(
-                    //    start_position[k].x + step_size * titik_awal.x,
-                    //    start_position[k].y + step_size * titik_awal.y,
+                    //DrawCircle(
+                    //    start_position[i].x + step_size * titik_awal.x,
+                    //    start_position[i].y + step_size * titik_awal.y,
                     //    1.F,
                     //    RED
-                    // );
+                    //);
                 }
             }
 
             EndScissorMode();
 
             
-
             {
                 // STEP SIZE BUTTONS BASE
                 float base_height = map_height * 0.6F;
@@ -432,8 +451,6 @@ int main()
                         DrawTextEx(font, step_size_text, step_text_coor, font_size, font_space, BLACK);
                     }
                 }
-
-
             }
 
             {
@@ -520,10 +537,8 @@ int main()
                             button.y + (button.height - step_text_measure.y) / 2
                         };
                         DrawTextEx(font, step_size_text, step_text_coor, font_size, font_space, BLACK);
-
                     }
                 }
-
             }
 
             if (isFullScreenShot) {
@@ -538,10 +553,6 @@ int main()
                 horizontal_ratio_coef = 0.7F;
             }
 
-        }
-
-        {
-            // BUTTON RETRY RANDOMs
 
         }
 
@@ -577,8 +588,21 @@ int main()
                     ratio_rect.y + (ratio_rect.height - ratio_text_measure.y) / 2,
                 };
                 DrawTextEx(font, ratio_text, ratio_text_coor, font_size, font_space, RAYWHITE);
+
+                // DRAW TODAY DATE
+                Rectangle date_rect = ratio_rect;
+                date_rect.x += (map.width / 3) * 2;
+
+                const char* date_text = today.c_str();
+                Vector2 date_text_measure = MeasureTextEx(font, date_text, font_size, font_space);
+                Vector2 date_text_coor = {
+                    date_rect.x + (date_rect.width - date_text_measure.x) / 1 - 10,
+                    date_rect.y + (date_rect.height - date_text_measure.y) / 2
+                };
+                DrawTextEx(font, date_text, date_text_coor, font_size, font_space, RAYWHITE);
             }
         }
+
 
         {
             // DRAW MAP PROGRESS
@@ -664,11 +688,9 @@ int main()
                 };
                 DrawTextEx(font, percent_text, percent_text_coor, font_size, font_space, RAYWHITE);
             }
-
         }
 
 
-        
 
         if (IsKeyPressed(KEY_ONE)) {
             step_size = 4;
@@ -691,24 +713,11 @@ int main()
             ResizeStartStepsSize(start_position);
         }
 
-        // TODO: MAKE SCREENSHOT MECHANISM
-        // MOVE THE screenshot to MAP folder, after screenshot, search map.png.
-        // 
-        // TODO: HAVE 2 MODE OF SCREENSHOT:
-        // 1 THE SCREEN
-        // 2 ONLY MAPS, AKA: ZOOM TO ONLY MAPS AND SCREENSHOT
-        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S) || IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyPressed(KEY_S)) {
-            isFullScreenShot = true;
-            horizontal_ratio_coef = 1.1F;
-            
-        }
-         else if (IsKeyPressed(KEY_S)) {
-            isCleanScreenShot = true;
-            horizontal_ratio_coef = 0.75F;
-         }
-
+        
         // INSTANT RETRY REMAP
         static bool remap = false;
+        static bool is_walk_empty = false;
+
         if ((IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_SPACE)) || (IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyPressed(KEY_SPACE))) {
             start_position = random_start_position();
             all_walks.clear();
@@ -722,7 +731,14 @@ int main()
             start_position = random_start_position();
             all_walks.clear();
             all_walks.resize(total_walker);
+
+            // RESERVING MEMORY DI AWAL UNTUK AGAR TIDAK PERLU RESIZE TIAP PUSH BACK COOR
+            for (size_t i = 0; i < all_walks.size(); i++) {
+                all_walks[i].reserve(number_steps);
+            }
+
             remap = true;
+            is_walk_empty = true;
             the_step_random_walk = 0;
         }
 
@@ -747,9 +763,14 @@ int main()
                 if (not_delay == true) {
                     for (int i = 0; i < total_walker; i++) {
                         Coor coor = { 0,0 };
+
                         if (!all_walks[i].empty()) {
                             coor = all_walks[i].back();
                         }
+
+                        /*if (!is_walk_empty) {
+                            coor = all_walks[i].back();
+                        }*/
 
                         for (int j = 0; j < step_per_delay; j++) {
 
@@ -777,6 +798,7 @@ int main()
                     }
 
                     the_step_random_walk++;
+                    //is_walk_empty = false;
                     not_delay = false;
                     delay_timer_start = std::chrono::steady_clock::now();
                 }
@@ -790,7 +812,7 @@ int main()
 
         
         {
-            float height_offset = 0.8F;
+            float height_offset = 0.75F;
 
             if (!isCleanScreenShot) {
                 // INSTANT REMAP
@@ -802,7 +824,7 @@ int main()
                 };
                  //DrawRectangleRec(remap_section_rect, BLACK);
 
-                float font_size = remap_section_rect.height * 0.55F;
+                float font_size = remap_section_rect.height * 0.525F;
                 float font_space = 0.0F;
 
                 const char* instant_text = "- INSTANT REMAP          ";
@@ -843,10 +865,10 @@ int main()
                 screenshot_section_rect.x += (map.width / 3);
                 //DrawRectangleRec(screenshot_section_rect, GRAY);
 
-                const char* full_screenshot_text = "- FULL SCREENSHOT           ";
+                const char* full_screenshot_text = "- FULL SCREENSHOT        ";
                 Vector2 full_screenshot_text_measure = MeasureTextEx(font, full_screenshot_text, font_size, font_space);
                 Vector2 full_screenshot_text_coor = {
-                    screenshot_section_rect.x + 25,
+                    screenshot_section_rect.x + 15,
                     screenshot_section_rect.y + (screenshot_section_rect.height - full_screenshot_text_measure.y) / 2
                 };
                 DrawTextEx(font, full_screenshot_text, full_screenshot_text_coor, font_size, font_space, RAYWHITE);
@@ -866,22 +888,55 @@ int main()
                 };
                 DrawTextEx(font, clean_screenshot_text, clean_screenshot_text_coor, font_size, font_space, RAYWHITE);
                 // KEY BINDINGS
-                key_bindings_text = ": S";
+                key_bindings_text = ": CTRL + C + S";
                 key_bindings_coor = {
                     screenshot_section_rect.x + full_screenshot_text_measure.x,
                     clean_screenshot_text_coor.y
                 };
                 DrawTextEx(font, key_bindings_text, key_bindings_coor, font_size, font_space, RAYWHITE);
 
+                // CLEAN SCREENSHOT
+                const char* basic_screenshot_text = "- BASIC SCREENSHOT";
+                Vector2 basic_screenshot_text_coor = {
+                    full_screenshot_text_coor.x,
+                    full_screenshot_text_coor.y + (screenshot_section_rect.height * height_offset) * 2
+                };
+                DrawTextEx(font, basic_screenshot_text, basic_screenshot_text_coor, font_size, font_space, RAYWHITE);
+                // KEY BINDINGS
+                key_bindings_text = ": S";
+                key_bindings_coor = {
+                    screenshot_section_rect.x + full_screenshot_text_measure.x,
+                    basic_screenshot_text_coor.y
+                };
+                DrawTextEx(font, key_bindings_text, key_bindings_coor, font_size, font_space, RAYWHITE);
             }
 
         }
 
-        
-
         EndDrawing();
 
+        // SCREENSHOT 
+        if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_C) && IsKeyPressed(KEY_S) || IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyDown(KEY_C) && IsKeyPressed(KEY_S)) {
+            isCleanScreenShot = true;
+            horizontal_ratio_coef = 0.75F;
+        }
+        else if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_S) || IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyPressed(KEY_S)) {
+            isFullScreenShot = true;
+            horizontal_ratio_coef = 1.1F;
+        }
+        else if (IsKeyPressed(KEY_S)) {
+            ScreenShot();
+        }
+        else if (IsKeyPressed(KEY_RIGHT)) {
+            ptr_vector_colors = &colors2;
+        }
+        else if (IsKeyPressed(KEY_LEFT)) {
+            ptr_vector_colors = &colors1;
+        }
+
     }
+
+    delete ptr_vector_colors;
 
     CloseWindow();
     return 0;
