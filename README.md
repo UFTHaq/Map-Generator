@@ -44,4 +44,10 @@ Basic Screen Shot
 ![Map Generator 2024-02-26 17-18-34](https://github.com/UFTHaq/Map-Generator/assets/104829519/d14c929b-ec53-4203-884b-d69e2413d39a)
 
 
+#### Icons by:
+<a href="https://www.flaticon.com/free-icons/asia" title="asia icons">Asia icons created by Kalashnyk - Flaticon</a>
 
+
+<p align="center">
+  <b>If you consider this page is useful, please leave a star ⭐</b>
+</p>
