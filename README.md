@@ -12,6 +12,8 @@ If you consider this page is useful, please leave a star
 ![map46](https://github.com/UFTHaq/Map-Generator/assets/104829519/dd452ed0-39cf-4636-af9d-11eb5c06bcef)
 
 ## Have 2 color mode (Color Full & Gray)
+Hover your mouse to top-left of the map canvas to show the color option buttons
+
 ![map47](https://github.com/UFTHaq/Map-Generator/assets/104829519/9895f621-0d93-4cdf-bd8c-b9d745c13db1)
 
 ## Can change Size Step
