@@ -1,0 +1,17 @@
+﻿  Map-Generator.cpp
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(74,78): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(74,52): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(75,80): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(75,53): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(345,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(344,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(343,23): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\Coding\Raylib C++\Map-Generator\Map-Generator.cpp(342,23): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating code
+  0 of 872 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Map-Generator.vcxproj -> D:\Coding\Raylib C++\Map-Generator\x64\Release\Map-Generator.exe
+  D:\Aplikasi\CODING\C & C++\Raylib\raylib-5.0_win64_msvc16\lib\raylib.dll
+  1 File(s) copied
