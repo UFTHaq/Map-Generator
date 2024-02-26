@@ -7,7 +7,9 @@
 # Map-Generator
 "Map Generator" by using random walks
 
-If you consider this page is useful, please leave a star
+<p align="center">
+  <b>If you consider this page is useful, please leave a star ⭐</b>
+</p>
 
 ![map46](https://github.com/UFTHaq/Map-Generator/assets/104829519/dd452ed0-39cf-4636-af9d-11eb5c06bcef)
 
