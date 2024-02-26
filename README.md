@@ -36,6 +36,12 @@ Provide Clean Map Screen Shot
 Basic Screen Shot
 ![map52](https://github.com/UFTHaq/Map-Generator/assets/104829519/ff3cbce6-fdcf-4e94-81be-ae3b032deea3)
 
+## 2 Different Remap Mode 
+
+### Instant Remap : CTRL + SPACE
+### Cinematic Remap : SPACE
+
+![Map Generator 2024-02-26 17-18-34](https://github.com/UFTHaq/Map-Generator/assets/104829519/d14c929b-ec53-4203-884b-d69e2413d39a)
 
 
 
