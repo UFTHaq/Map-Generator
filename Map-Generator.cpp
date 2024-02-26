@@ -17,6 +17,8 @@
 #define RAYGUI_IMPLEMENTATION
 
 #define FONT_LOC {"D:/Coding/Raylib C++/Map-Generator/fonts/Anta/Anta-Regular.ttf"}
+#define COLORS_ICON_LOC  {"D:/Coding/Raylib C++/Map-Generator/icons/Button Colors.png"}
+#define ICON_APP_LOC {"D:/Coding/Raylib C++/Map-Generator/icons/earth.png"}
 
 const Color PROGRESS_COLOR = { 0, 168, 117, 255 };
 
@@ -168,9 +170,13 @@ std::string getDate()
 }
 
 
+void CinematicRemap(std::vector<Coor>& start_position, std::vector<std::vector<Coor>>& all_walks, bool& remap, bool& is_walk_empty);
+
+void InstantRemap(std::vector<Coor>& start_position, std::vector<std::vector<Coor>>& all_walks);
+
 int main()
 {
-    const Color BASE_COLOR = Color{ 30, 30, 30, 55 };
+    const Color BASE_COLOR = Color{ 30, 30, 30, 150 };
     const Color MAP_COLOR = Color{ 30, 40, 50, 255 };
 
     const int screenWidth = 1600;
@@ -181,9 +187,14 @@ int main()
     //SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(screenWidth, screenHeight, "Map Generator");
     SetTargetFPS(60);
+    SetWindowIcon(LoadImage(ICON_APP_LOC));
 
     Font font = LoadFontEx(FONT_LOC, 70, 0, 0);
     SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
+
+    Image colors_icon = LoadImage(COLORS_ICON_LOC);
+    Texture2D COLORS_TEX = LoadTextureFromImage(colors_icon);
+    SetTextureFilter(COLORS_TEX, TEXTURE_FILTER_BILINEAR);
 
 
     std::vector<Coor> start_position{};
@@ -557,6 +568,112 @@ int main()
         }
 
         {
+            // CHANGE COLORS BUTTON
+            static float alpha = 1.0F;
+            static auto time_button_show_start = std::chrono::steady_clock::now();
+            auto time_now = std::chrono::steady_clock::now();
+            auto time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - time_button_show_start).count();
+
+            if (time_diff >= 1500) {
+                alpha = alpha * 0.9F;
+            }
+
+            float canvas_width = map.width * 0.1F;
+            Rectangle canvas = {
+                map.x + (canvas_width * 0.1F),
+                map.y + (canvas_width * 0.1F),
+                canvas_width,
+                canvas_width / 2
+            };
+            //DrawRectangleRec(canvas, RAYWHITE);
+            DrawRectangleRounded(canvas, 0.35F, 10, Fade(BASE_COLOR, (alpha * 0.8F)));
+
+            if (CheckCollisionPointRec(GetMousePosition(), canvas)) {
+                time_button_show_start = std::chrono::steady_clock::now();
+                alpha = 1.0F;
+            }
+
+            float padding_base = canvas.height * 0.1F;
+            float padding_rect = 0;
+            Color color = RAYWHITE;
+            Rectangle rect_colors_base = {
+                canvas.x + (padding_base * 1) + (padding_base * 0.5F),
+                canvas.y + (padding_base * 1),
+                (canvas.width / 2) - (padding_base * 2),
+                canvas.height - (padding_base * 2)
+            };
+            //DrawRectangleRec(rect_colors_base, RAYWHITE);
+
+            if (CheckCollisionPointRec(GetMousePosition(), rect_colors_base)) {
+                color = WHITE;
+                padding_rect = canvas.height * -0.02F;
+
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                    padding_rect = canvas.height * 0.02F;
+                }
+                else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                    ptr_vector_colors = &colors1;
+                }
+            }
+            else {
+                padding_rect = 0;
+                color = RAYWHITE;
+            }
+
+            Rectangle rect_colors = {
+                rect_colors_base.x + (padding_rect * 1),
+                rect_colors_base.y + (padding_rect * 1),
+                rect_colors_base.width - (padding_rect * 2),
+                rect_colors_base.height - (padding_rect * 2)
+            };
+
+            float icon_index = 0;
+            float icon_size = 100;
+            Rectangle dest = rect_colors;
+            Rectangle source = { icon_index * icon_size, 0, icon_size, icon_size };
+            DrawTexturePro(COLORS_TEX, source, dest, { 0,0 }, 0, Fade(color, alpha));
+
+
+            icon_index = 1;
+            //color = RAYWHITE;
+            Rectangle rect_grays_base = {
+                canvas.x + (canvas.width / 2) + (padding_base * 1) - (padding_base * 0.5F),
+                canvas.y + (padding_base * 1),
+                (canvas.width / 2) - (padding_base * 2),
+                canvas.height - (padding_base * 2)
+            };
+            //DrawRectangleRec(rect_grays_base, RAYWHITE);
+
+            if (CheckCollisionPointRec(GetMousePosition(), rect_grays_base)) {
+                color = WHITE;
+                padding_rect = canvas.height * -0.02F;
+
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                    padding_rect = canvas.height * 0.02F;
+                }
+                else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                    ptr_vector_colors = &colors2;
+                }
+            }
+            else {
+                padding_rect = 0;
+                color = RAYWHITE;
+            }
+
+            Rectangle rect_grays = {
+                rect_grays_base.x + (padding_rect * 1),
+                rect_grays_base.y + (padding_rect * 1),
+                rect_grays_base.width - (padding_rect * 2),
+                rect_grays_base.height - (padding_rect * 2)
+            };
+
+            dest = rect_grays;
+            source = { icon_index * icon_size, 0, icon_size, icon_size };
+            DrawTexturePro(COLORS_TEX, source, dest, { 0,0 }, 0, Fade(color, alpha));
+
+        }
+
+        {
             // DRAW INFO MAPS RATIO
             if (!isCleanScreenShot) {
                 Rectangle ratio_rect = {
@@ -719,31 +836,14 @@ int main()
         static bool is_walk_empty = false;
 
         if ((IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_SPACE)) || (IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyPressed(KEY_SPACE))) {
-            start_position = random_start_position();
-            all_walks.clear();
-
-            for (int i = 0; i < total_walker; i++) {
-                all_walks.push_back(walker(number_steps));
-            }
+            InstantRemap(start_position, all_walks);
         }
         // CINEMATIC RETRY REMAP
         else if (IsKeyPressed(KEY_SPACE) && remap == false) {
-            start_position = random_start_position();
-            all_walks.clear();
-            all_walks.resize(total_walker);
-
-            // RESERVING MEMORY DI AWAL UNTUK AGAR TIDAK PERLU RESIZE TIAP PUSH BACK COOR
-            for (size_t i = 0; i < all_walks.size(); i++) {
-                all_walks[i].reserve(number_steps);
-            }
-
-            remap = true;
-            is_walk_empty = true;
-            the_step_random_walk = 0;
+            CinematicRemap(start_position, all_walks, remap, is_walk_empty);
         }
 
         if (remap == true) {
-            // static int the_walker = 0;
 
             static bool not_delay = true;
             static std::chrono::steady_clock::time_point delay_timer_start{};
@@ -767,10 +867,6 @@ int main()
                         if (!all_walks[i].empty()) {
                             coor = all_walks[i].back();
                         }
-
-                        /*if (!is_walk_empty) {
-                            coor = all_walks[i].back();
-                        }*/
 
                         for (int j = 0; j < step_per_delay; j++) {
 
@@ -798,7 +894,6 @@ int main()
                     }
 
                     the_step_random_walk++;
-                    //is_walk_empty = false;
                     not_delay = false;
                     delay_timer_start = std::chrono::steady_clock::now();
                 }
@@ -927,6 +1022,12 @@ int main()
         else if (IsKeyPressed(KEY_S)) {
             ScreenShot();
         }
+
+        // TODO: BUAT BUTTON
+        // BUAT ADA DIDALAM KIRI ATAS MAP, DAN BUAT BISA HILANG DAN MUNCUL KETIKA DI HOVER, TETAPI PADA SAAT AWAL ON, BUAT DIA MUNCUL DULU.
+        // WAKTU UNTUK MENGHILANG MUNGKIN 2 DETIK, 1 DETIK AWAL DIA FULL, 1 DETIK SELANJUTNYA BERANGSUR TRANSPARAN HINGGA HILANG
+        // BERARTI BERMAIN DENGAN ALPHA, JIKA ALPHA 0 TIDAK PERLU DRAW LAGI. JIKA DI HOVER ALPHA 1.
+
         else if (IsKeyPressed(KEY_RIGHT)) {
             ptr_vector_colors = &colors2;
         }
@@ -940,6 +1041,32 @@ int main()
 
     CloseWindow();
     return 0;
+}
+
+void InstantRemap(std::vector<Coor>& start_position, std::vector<std::vector<Coor>>& all_walks)
+{
+    start_position = random_start_position();
+    all_walks.clear();
+
+    for (int i = 0; i < total_walker; i++) {
+        all_walks.push_back(walker(number_steps));
+    }
+}
+
+void CinematicRemap(std::vector<Coor>& start_position, std::vector<std::vector<Coor>>& all_walks, bool& remap, bool& is_walk_empty)
+{
+    start_position = random_start_position();
+    all_walks.clear();
+    all_walks.resize(total_walker);
+
+    // RESERVING MEMORY DI AWAL UNTUK AGAR TIDAK PERLU RESIZE TIAP PUSH BACK COOR
+    for (size_t i = 0; i < all_walks.size(); i++) {
+        all_walks[i].reserve(number_steps);
+    }
+
+    remap = true;
+    is_walk_empty = true;
+    the_step_random_walk = 0;
 }
 
 void ScreenShot()
